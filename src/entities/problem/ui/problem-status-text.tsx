@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 
-import type { ProblemStatus } from "../model/types";
+import type { ProblemStatus } from "../model/problem-status";
 
 const DOT_COLOR: Record<ProblemStatus, string> = {
   passed: "bg-success",

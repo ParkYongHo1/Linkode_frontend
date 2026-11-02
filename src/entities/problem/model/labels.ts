@@ -1,4 +1,5 @@
-import type { ProblemLevel, ProblemStatus } from "./types";
+import type { ProblemStatus } from "./problem-status";
+import type { ProblemLevel } from "./types";
 
 export const PROBLEM_LEVEL_LABEL: Record<ProblemLevel, string> = {
   easy: "쉬움",

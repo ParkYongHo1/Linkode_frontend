@@ -1,6 +1,6 @@
-export type ProblemLevel = "easy" | "normal" | "hard";
+import type { ProblemStatus } from "./problem-status";
 
-export type ProblemStatus = "todo" | "in_progress" | "passed";
+export type ProblemLevel = "easy" | "normal" | "hard";
 
 export type ProblemListItem = {
   id: string;

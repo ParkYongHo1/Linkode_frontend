@@ -1,2 +1,3 @@
 export { AppHeader } from "./ui/app-header";
-export { LearnerNav } from "./ui/learner-nav";
+export { HeaderActions } from "./ui/header-actions";
+export { MainNav } from "./ui/main-nav";

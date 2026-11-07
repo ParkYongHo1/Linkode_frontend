@@ -5,12 +5,9 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/shared/lib/utils";
 
-const NAV_ITEMS = [
-  { href: "/problems", label: "실습 문제" },
-  { href: "/help-requests", label: "내 도움 요청" },
-];
+const NAV_ITEMS = [{ href: "/problems", label: "실습 문제" }];
 
-export function LearnerNav() {
+export function MainNav() {
   const pathname = usePathname();
 
   return (

@@ -1,9 +1,13 @@
+import { connection } from "next/server";
+
 import { createClient } from "@/shared/api/supabase/server";
 
-import { AccountButton } from "./account-button";
+import { AccountMenu } from "./account-menu";
 import { GuestActions } from "./guest-actions";
 
 export async function HeaderActions() {
+  await connection();
+
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 
@@ -15,5 +19,5 @@ export async function HeaderActions() {
 
   const initial = claims.email?.[0]?.toUpperCase();
 
-  return <AccountButton initial={initial} />;
+  return <AccountMenu email={claims.email} initial={initial} />;
 }

@@ -1,11 +1,9 @@
-import {
-  getProblems,
-  PROBLEM_STATUS_LABEL,
-  type ProblemListItem,
-} from "@/entities/problem";
+import { getProblems } from "@/entities/problem";
+import { getMyProgress } from "@/entities/progress";
 import { ProblemTable } from "@/widgets/problem-table";
 
 import { parseStatusFilter } from "../model/parse-status-filter";
+import { toProblemListItem } from "../model/to-problem-list-item";
 
 type ProblemTableSectionProps = Pick<PageProps<"/problems">, "searchParams">;
 
@@ -15,12 +13,18 @@ export async function ProblemTableSection({
   const { status } = await searchParams;
   const activeStatus = parseStatusFilter(status);
 
-  const problems = await getProblems();
+  const [problems, progressList] = await Promise.all([
+    getProblems(),
+    getMyProgress(),
+  ]);
 
-  const items: ProblemListItem[] = problems.map((problem) => ({
-    ...problem,
-    status: "todo",
-    statusText: PROBLEM_STATUS_LABEL.todo,
-  }));
+  const progressByProblemId = new Map(
+    progressList.map((progress) => [progress.problemId, progress]),
+  );
+
+  const items = problems.map((problem) =>
+    toProblemListItem(problem, progressByProblemId.get(problem.id)),
+  );
+
   return <ProblemTable problems={items} activeStatus={activeStatus} />;
 }

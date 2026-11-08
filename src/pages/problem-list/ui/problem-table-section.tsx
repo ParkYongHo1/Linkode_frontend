@@ -1,6 +1,10 @@
+import {
+  getProblems,
+  PROBLEM_STATUS_LABEL,
+  type ProblemListItem,
+} from "@/entities/problem";
 import { ProblemTable } from "@/widgets/problem-table";
 
-import { MOCK_PROBLEMS } from "../model/mock";
 import { parseStatusFilter } from "../model/parse-status-filter";
 
 type ProblemTableSectionProps = Pick<PageProps<"/problems">, "searchParams">;
@@ -11,5 +15,12 @@ export async function ProblemTableSection({
   const { status } = await searchParams;
   const activeStatus = parseStatusFilter(status);
 
-  return <ProblemTable problems={MOCK_PROBLEMS} activeStatus={activeStatus} />;
+  const problems = await getProblems();
+
+  const items: ProblemListItem[] = problems.map((problem) => ({
+    ...problem,
+    status: "todo",
+    statusText: PROBLEM_STATUS_LABEL.todo,
+  }));
+  return <ProblemTable problems={items} activeStatus={activeStatus} />;
 }

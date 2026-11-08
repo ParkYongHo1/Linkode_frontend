@@ -81,6 +81,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          passed_at: string | null
+          problem_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          passed_at?: string | null
+          problem_id: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          passed_at?: string | null
+          problem_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

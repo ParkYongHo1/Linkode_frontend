@@ -1,11 +1,13 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { isProblemStatus } from "@/entities/problem";
 import { createClient } from "@/shared/api/supabase/server";
 
 import type { ProblemProgress } from "../model/types";
 
-export async function getMyProgress(): Promise<ProblemProgress[]> {
+export const getMyProgress = cache(async (): Promise<ProblemProgress[]> => {
   const supabase = await createClient();
 
   const { data: auth } = await supabase.auth.getClaims();
@@ -33,4 +35,4 @@ export async function getMyProgress(): Promise<ProblemProgress[]> {
       updatedAt: row.updated_at,
     };
   });
-}
+});

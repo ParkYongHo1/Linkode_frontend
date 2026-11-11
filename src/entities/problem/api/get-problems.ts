@@ -1,11 +1,12 @@
 import "server-only";
+import { cache } from "react";
 
 import { createClient } from "@/shared/api/supabase/server";
 
 import { isProblemLevel } from "../model/problem-level";
 import type { ProblemSummary } from "../model/types";
 
-export async function getProblems(): Promise<ProblemSummary[]> {
+export const getProblems = cache(async (): Promise<ProblemSummary[]> => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -31,4 +32,4 @@ export async function getProblems(): Promise<ProblemSummary[]> {
       estimatedMinutes: row.estimated_minutes,
     };
   });
-}
+});

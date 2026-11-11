@@ -1,5 +1,6 @@
 import { getProblems } from "@/entities/problem";
 import { getMyProgress } from "@/entities/progress";
+import { getCurrentUser } from "@/entities/session";
 import { ProblemTable } from "@/widgets/problem-table";
 
 import { parseStatusFilter } from "../model/parse-status-filter";
@@ -13,9 +14,10 @@ export async function ProblemTableSection({
   const { status } = await searchParams;
   const activeStatus = parseStatusFilter(status);
 
-  const [problems, progressList] = await Promise.all([
+  const [problems, progressList, user] = await Promise.all([
     getProblems(),
     getMyProgress(),
+    getCurrentUser(),
   ]);
 
   const progressByProblemId = new Map(
@@ -26,5 +28,11 @@ export async function ProblemTableSection({
     toProblemListItem(problem, progressByProblemId.get(problem.id)),
   );
 
-  return <ProblemTable problems={items} activeStatus={activeStatus} />;
+  return (
+    <ProblemTable
+      problems={items}
+      activeStatus={activeStatus}
+      showProgress={!!user}
+    />
+  );
 }

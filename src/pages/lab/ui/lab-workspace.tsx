@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getProblem } from "@/entities/problem";
 
+import { LabEditorSection } from "./lab-editor-section";
 import { ProblemPanel } from "./problem-panel";
 
 type LabWorkspaceProps = Pick<PageProps<"/problems/[id]">, "params">;
@@ -18,29 +19,7 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
     <div className="flex min-h-0 flex-1">
       <ProblemPanel problem={problem} />
 
-      <main className="flex min-w-0 flex-1 flex-col">
-        <div className="flex h-14 shrink-0 items-stretch justify-between border-b border-border pr-4">
-          <span className="flex items-center px-5 font-mono text-[13px] text-foreground shadow-[inset_0_-2px_0_var(--foreground)]">
-            solution.js
-          </span>
-        </div>
-
-        <pre className="min-h-0 flex-1 overflow-auto px-6 py-4 font-mono text-sm leading-6 text-foreground">
-          {problem.starterCode}
-        </pre>
-
-        <section
-          aria-label="콘솔"
-          className="flex h-[216px] shrink-0 flex-col border-t border-border"
-        >
-          <div className="flex h-11 shrink-0 items-center border-b border-border px-6">
-            <h2 className="text-sm font-semibold">콘솔</h2>
-          </div>
-          <p className="px-6 py-3 text-[13px] text-muted-foreground">
-            실행하면 결과가 여기에 표시돼요.
-          </p>
-        </section>
-      </main>
+      <LabEditorSection starterCode={problem.starterCode} />
 
       <aside
         aria-label="AI 힌트"

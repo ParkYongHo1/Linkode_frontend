@@ -7,11 +7,17 @@ import { Button } from "@/shared/ui/button";
 import { CodeEditor } from "@/widgets/code-editor";
 
 type LabEditorSectionProps = {
-  starterCode: string;
+  problemId: string;
+  initialCode: string;
+  initialVersion: number;
 };
 
-export function LabEditorSection({ starterCode }: LabEditorSectionProps) {
-  const [code, setCode] = useState(starterCode);
+export function LabEditorSection({
+  problemId,
+  initialCode,
+  initialVersion,
+}: LabEditorSectionProps) {
+  const [code, setCode] = useState(initialCode);
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
@@ -29,7 +35,7 @@ export function LabEditorSection({ starterCode }: LabEditorSectionProps) {
 
       <div className="min-h-0 flex-1">
         <CodeEditor
-          defaultValue={starterCode}
+          defaultValue={initialCode}
           onChange={(value) => setCode(value ?? "")}
         />
       </div>

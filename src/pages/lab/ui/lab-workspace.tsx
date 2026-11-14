@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { getProblem } from "@/entities/problem";
+import { getMyCode } from "@/entities/user-code";
 
 import { LabEditorSection } from "./lab-editor-section";
 import { ProblemPanel } from "./problem-panel";
@@ -15,11 +16,20 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
     notFound();
   }
 
+  const savedCode = await getMyCode(problem.id);
+
+  const initialCode = savedCode?.code ?? problem.starterCode;
+  const initialVersion = savedCode?.version ?? 0;
+
   return (
     <div className="flex min-h-0 flex-1">
       <ProblemPanel problem={problem} />
 
-      <LabEditorSection starterCode={problem.starterCode} />
+      <LabEditorSection
+        problemId={problem.id}
+        initialCode={initialCode}
+        initialVersion={initialVersion}
+      />
 
       <aside
         aria-label="AI 힌트"

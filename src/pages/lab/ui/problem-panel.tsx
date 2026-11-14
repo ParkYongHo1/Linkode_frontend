@@ -9,7 +9,7 @@ export function ProblemPanel({ problem }: ProblemPanelProps) {
   return (
     <aside
       aria-label="문제 설명"
-      className="w-80 shrink-0 overflow-y-auto border-r border-border px-6 pt-7 pb-10"
+      className="w-full overflow-y-auto px-5 pt-6 pb-10 md:w-80 md:shrink-0 md:border-r md:border-border md:px-6 md:pt-7"
     >
       <p className="text-[13px] text-muted-foreground">{problem.number}</p>
       <h1 className="mt-1 text-xl leading-[30px] font-bold tracking-[-0.3px]">

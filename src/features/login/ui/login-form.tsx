@@ -19,7 +19,7 @@ export function LoginForm() {
   const errorId = hasError ? "login-error" : undefined;
 
   return (
-    <form action={formAction} className="mt-10 flex flex-col gap-5">
+    <form action={formAction} className="mt-8 flex flex-col gap-5 md:mt-10">
       <div className="flex flex-col gap-2">
         <label
           htmlFor="email"

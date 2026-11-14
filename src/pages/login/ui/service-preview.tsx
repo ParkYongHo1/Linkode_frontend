@@ -47,14 +47,14 @@ export function ServicePreview() {
   return (
     <section
       aria-label="서비스 미리보기"
-      className="flex min-w-0 flex-[1_1_560px] flex-col gap-8"
+      className="flex min-w-0 flex-col gap-8 md:flex-[1_1_560px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       <div
         key={activeIndex}
         aria-hidden="true"
-        className="animate-in duration-300 fade-in motion-reduce:animate-none"
+        className="hidden animate-in duration-300 fade-in motion-reduce:animate-none md:block"
       >
         <ActivePreview />
       </div>

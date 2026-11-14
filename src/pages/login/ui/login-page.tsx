@@ -7,9 +7,9 @@ import { ServicePreview } from "./service-preview";
 
 export function LoginPage() {
   return (
-    <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-wrap items-start gap-24 px-12 pt-20 pb-24">
-      <section aria-labelledby="login-title" className="flex min-w-0 flex-[0_1_400px] flex-col">
-        <h1 id="login-title" className="text-[28px] leading-[38px] font-bold tracking-[-0.5px]">
+    <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col items-stretch gap-14 px-5 pt-8 pb-14 md:flex-row md:flex-wrap md:items-start md:gap-24 md:px-12 md:pt-20 md:pb-24">
+      <section aria-labelledby="login-title" className="flex min-w-0 flex-col md:flex-[0_1_400px]">
+        <h1 id="login-title" className="text-2xl leading-[34px] font-bold tracking-[-0.4px] md:text-[28px] md:leading-[38px] md:tracking-[-0.5px]">
           로그인
         </h1>
         <p className="mt-2 text-[15px] leading-6 text-muted-foreground">

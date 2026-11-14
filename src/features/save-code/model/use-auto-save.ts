@@ -1,10 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 
 import { saveCode } from "../api/save-code";
+import { getSavedCode } from "../api/get-saved-code";
+
 import type { SaveStatus } from "./save-status";
 
 const DEBOUNCE_MS = 2000;
+const RETRY_MS = 5000;
 
 type UseAutoSaveParams = {
   problemId: string;
@@ -57,24 +60,56 @@ export function useAutoSave({
     },
   });
 
+  const isConflict = data?.status === "conflict";
+  const { data: conflictSaved } = useQuery({
+    queryKey: ["saved-code", problemId],
+    queryFn: () => getSavedCode(problemId),
+    enabled: isConflict,
+    staleTime: 0,
+  });
+
   useEffect(() => {
     if (!enabled) return;
+    if (isPending) return;
+    if (isConflict) return;
     if (code === lastSavedCodeRef.current) return;
+
+    const delay = isError ? RETRY_MS : DEBOUNCE_MS;
 
     const timerId = setTimeout(() => {
       mutate({ problemId, code, baseVersion });
-    }, DEBOUNCE_MS);
+    }, delay);
 
     return () => clearTimeout(timerId);
-  }, [problemId, code, baseVersion, enabled, mutate]);
+  }, [
+    problemId,
+    code,
+    baseVersion,
+    enabled,
+    mutate,
+    isConflict,
+    isError,
+    isPending,
+  ]);
 
   const status = getSaveStatus({
     enabled,
     isPending,
     isError,
-    isConflict: data?.status === "conflict",
+    isConflict,
     version: baseVersion,
   });
+  const overwrite = () => {
+    const latestVersion = conflictSaved?.version ?? 0;
 
-  return { status, version: baseVersion };
+    setBaseVersion(latestVersion);
+    mutate({ problemId, code, baseVersion: latestVersion });
+  };
+
+  return {
+    status,
+    version: baseVersion,
+    overwrite,
+    conflictCode: conflictSaved?.code,
+  };
 }

@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 
-import { SaveStatusText, useAutoSave } from "@/features/save-code";
+import {
+  ConflictBanner,
+  SaveStatusText,
+  useAutoSave,
+} from "@/features/save-code";
 
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
-import { CodeEditor } from "@/widgets/code-editor";
+import { CodeDiffViewer, CodeEditor } from "@/widgets/code-editor";
 
 type LabEditorSectionProps = {
   problemId: string;
@@ -22,8 +27,9 @@ export function LabEditorSection({
   canSave,
 }: LabEditorSectionProps) {
   const [code, setCode] = useState(initialCode);
+  const [isDiffOpen, setIsDiffOpen] = useState(false);
 
-  const { status, version } = useAutoSave({
+  const { status, version, overwrite, conflictCode } = useAutoSave({
     problemId,
     code,
     initialCode,
@@ -46,7 +52,31 @@ export function LabEditorSection({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1">
+      {status === "conflict" && (
+        <ConflictBanner
+          isDiffOpen={isDiffOpen}
+          onToggleDiff={() => setIsDiffOpen((prev) => !prev)}
+          onOverwrite={overwrite}
+        />
+      )}
+
+      {status === "conflict" && isDiffOpen && (
+        <div className="min-h-0 flex-1">
+          <CodeDiffViewer
+            original={conflictCode}
+            modified={code}
+            originalLabel="다른 탭 저장본"
+            modifiedLabel="이 탭 (저장 안 됨)"
+          />
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "min-h-0 flex-1",
+          status === "conflict" && isDiffOpen && "hidden",
+        )}
+      >
         <CodeEditor
           defaultValue={initialCode}
           onChange={(value) => setCode(value ?? "")}

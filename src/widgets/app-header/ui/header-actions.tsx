@@ -1,19 +1,21 @@
-import { createClient } from "@/shared/api/supabase/server";
+import { getCurrentUser } from "@/entities/session";
 
 import { AccountMenu } from "./account-menu";
 import { GuestActions } from "./guest-actions";
 
 export async function HeaderActions() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
+  const user = await getCurrentUser();
 
-  const claims = data?.claims;
-
-  if (!claims) {
+  if (!user) {
     return <GuestActions />;
   }
 
-  const initial = claims.email?.[0]?.toUpperCase();
+  const initial = user.email?.[0]?.toUpperCase();
 
-  return <AccountMenu email={claims.email} initial={initial} />;
+  return (
+    <AccountMenu
+      label={user.isAnonymous ? "체험 계정" : user.email}
+      initial={initial}
+    />
+  );
 }

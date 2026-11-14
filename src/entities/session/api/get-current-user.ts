@@ -7,6 +7,7 @@ import { createClient } from "@/shared/api/supabase/server";
 export type CurrentUser = {
   id: string;
   email: string | undefined;
+  isAnonymous: boolean;
 };
 
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
@@ -22,5 +23,6 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   return {
     id: claims.sub,
     email: claims.email,
+    isAnonymous: claims.is_anonymous === true,
   };
 });

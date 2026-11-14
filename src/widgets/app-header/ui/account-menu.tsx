@@ -13,11 +13,11 @@ import {
 } from "@/shared/ui/dropdown-menu";
 
 type AccountMenuProps = {
-  email?: string;
+  label?: string;
   initial?: string;
 };
 
-export function AccountMenu({ email, initial }: AccountMenuProps) {
+export function AccountMenu({ label, initial }: AccountMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,9 +33,9 @@ export function AccountMenu({ email, initial }: AccountMenuProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        {email && (
+        {label && (
           <>
-            <DropdownMenuLabel className="truncate">{email}</DropdownMenuLabel>
+            <DropdownMenuLabel className="truncate">{label}</DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
         )}

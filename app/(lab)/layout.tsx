@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { QueryProvider } from "@/app/providers";
 import { AppHeader, HeaderActions, MainNav } from "@/widgets/app-header";
 
 export default function LabLayout({ children }: LayoutProps<"/">) {
@@ -13,7 +14,7 @@ export default function LabLayout({ children }: LayoutProps<"/">) {
           </Suspense>
         }
       />
-      {children}
+      <QueryProvider>{children}</QueryProvider>
     </div>
   );
 }

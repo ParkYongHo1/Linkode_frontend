@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 import {
   PROBLEM_LEVEL_LABEL,
@@ -48,7 +49,7 @@ export function ProblemTable({
       {showProgress && (
         <nav
           aria-label="문제 상태 필터"
-          className="mt-10 flex gap-1 overflow-x-auto border-b border-border"
+          className="-mx-5 mt-8 flex gap-1 overflow-x-auto border-b border-border px-2 md:mx-0 md:mt-10 md:px-0"
         >
           {TABS.map((tab) => {
             const isActive = tab.value === activeStatus;
@@ -67,7 +68,7 @@ export function ProblemTable({
                 key={tab.value}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "h-12 shrink-0 px-3.5 text-[15px] whitespace-nowrap",
+                  "flex h-12 shrink-0 items-center px-3 text-[15px] whitespace-nowrap md:px-3.5",
                   isActive
                     ? "font-semibold text-foreground shadow-[inset_0_-2px_0_var(--foreground)]"
                     : "font-medium text-muted-foreground",
@@ -88,7 +89,49 @@ export function ProblemTable({
         </nav>
       )}
 
-      <div className={cn("overflow-x-auto", !showProgress && "mt-10")}>
+      <ul
+        aria-label="문제 목록"
+        className={cn(
+          "md:hidden",
+          !showProgress && "mt-6 border-t border-border",
+        )}
+      >
+        {visibleProblems.map((problem) => (
+          <li key={problem.id} className="border-b border-border">
+            <Link
+              href={`/problems/${problem.id}`}
+              className="flex items-center gap-3 py-4 text-foreground"
+            >
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="text-[13px] text-muted-foreground">
+                  {problem.number} · {problem.topic} ·{" "}
+                  {PROBLEM_LEVEL_LABEL[problem.level]}
+                </span>
+                <span className="text-base leading-6 font-semibold">
+                  {problem.title}
+                </span>
+                {showProgress && (
+                  <ProblemStatusText
+                    status={problem.status}
+                    text={problem.statusText}
+                  />
+                )}
+              </div>
+              <ChevronRight
+                aria-hidden="true"
+                className="size-5 shrink-0 text-subtle"
+              />
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <div
+        className={cn(
+          "hidden overflow-x-auto md:block",
+          !showProgress && "mt-10",
+        )}
+      >
         <table className="w-full min-w-[820px] border-collapse text-[15px]">
           <thead>
             <tr className="text-left text-[13px] text-muted-foreground">

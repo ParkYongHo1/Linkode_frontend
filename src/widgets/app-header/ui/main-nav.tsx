@@ -10,7 +10,7 @@ const NAV_ITEMS = [{ href: "/problems", label: "실습 문제" }];
 
 function NavLinks({ pathname }: { pathname: string | null }) {
   return (
-    <nav aria-label="주요 메뉴" className="flex gap-7 text-[15px]">
+    <nav aria-label="주요 메뉴" className="flex gap-5 text-[15px] whitespace-nowrap md:gap-7">
       {NAV_ITEMS.map((item) => {
         const isActive =
           pathname === item.href || pathname?.startsWith(`${item.href}/`);

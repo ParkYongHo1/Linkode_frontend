@@ -81,6 +81,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_codes: {
+        Row: {
+          code: string
+          problem_id: string
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          code: string
+          problem_id: string
+          updated_at?: string
+          user_id: string
+          version?: number
+        }
+        Update: {
+          code?: string
+          problem_id?: string
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_codes_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           passed_at: string | null
@@ -118,7 +150,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      save_user_code: {
+        Args: {
+          p_code: string
+          p_expected_version: number
+          p_problem_id: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

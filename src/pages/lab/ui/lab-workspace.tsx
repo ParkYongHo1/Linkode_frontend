@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getProblem } from "@/entities/problem";
 import { getMyCode } from "@/entities/user-code";
+import { getCurrentUser } from "@/entities/session";
 
 import { LabEditorSection } from "./lab-editor-section";
 import { ProblemPanel } from "./problem-panel";
@@ -15,8 +16,10 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
   if (!problem) {
     notFound();
   }
-
-  const savedCode = await getMyCode(problem.id);
+  const [savedCode, user] = await Promise.all([
+    getMyCode(problem.id),
+    getCurrentUser(),
+  ]);
 
   const initialCode = savedCode?.code ?? problem.starterCode;
   const initialVersion = savedCode?.version ?? 0;
@@ -29,6 +32,7 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
         problemId={problem.id}
         initialCode={initialCode}
         initialVersion={initialVersion}
+        canSave={!!user}
       />
 
       <aside

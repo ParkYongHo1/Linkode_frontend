@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 
+import { SaveStatusText, useAutoSave } from "@/features/save-code";
+
 import { Button } from "@/shared/ui/button";
 import { CodeEditor } from "@/widgets/code-editor";
 
@@ -10,14 +12,24 @@ type LabEditorSectionProps = {
   problemId: string;
   initialCode: string;
   initialVersion: number;
+  canSave: boolean;
 };
 
 export function LabEditorSection({
   problemId,
   initialCode,
   initialVersion,
+  canSave,
 }: LabEditorSectionProps) {
   const [code, setCode] = useState(initialCode);
+
+  const { status, version } = useAutoSave({
+    problemId,
+    code,
+    initialCode,
+    initialVersion,
+    enabled: canSave,
+  });
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
@@ -26,6 +38,7 @@ export function LabEditorSection({
           solution.js
         </span>
         <div className="flex items-center gap-4">
+          <SaveStatusText status={status} version={version} />
           <Button type="button" disabled className="gap-2">
             <Play aria-hidden="true" className="size-3.5 fill-current" />
             실행

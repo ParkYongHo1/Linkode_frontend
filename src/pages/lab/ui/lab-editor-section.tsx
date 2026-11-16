@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 
+import { ConsoleOutput, useCodeRunner } from "@/features/run-code";
 import {
   ConflictBanner,
   SaveStatusText,
@@ -28,6 +29,7 @@ export function LabEditorSection({
 }: LabEditorSectionProps) {
   const [code, setCode] = useState(initialCode);
   const [isDiffOpen, setIsDiffOpen] = useState(false);
+  const { lines, result, run } = useCodeRunner();
 
   const { status, version, overwrite, conflictCode } = useAutoSave({
     problemId,
@@ -45,7 +47,12 @@ export function LabEditorSection({
         </span>
         <div className="flex min-w-0 flex-1 items-center justify-between gap-3 pl-5 md:flex-none md:justify-end md:gap-4 md:pl-0">
           <SaveStatusText status={status} version={version} />
-          <Button type="button" disabled className="gap-2">
+          <Button
+            type="button"
+            className="gap-2"
+            disabled={result.status === "running"}
+            onClick={() => run(code)}
+          >
             <Play aria-hidden="true" className="size-3.5 fill-current" />
             실행
           </Button>
@@ -90,9 +97,7 @@ export function LabEditorSection({
         <div className="flex h-11 shrink-0 items-center border-b border-border px-5 md:px-6">
           <h2 className="text-sm font-semibold">콘솔</h2>
         </div>
-        <p className="px-5 py-3 text-[13px] text-muted-foreground md:px-6">
-          실행하면 결과가 여기에 표시돼요.
-        </p>
+        <ConsoleOutput lines={lines} result={result} />
       </section>
     </main>
   );

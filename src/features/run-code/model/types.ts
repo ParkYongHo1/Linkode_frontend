@@ -15,7 +15,8 @@ export type ConsoleLine = {
   text: string;
 };
 
-export type RunStatus = "idle" | "running" | "done" | "error";
+export type RunStatus =
+  "idle" | "running" | "done" | "error" | "timeout" | "cancelled";
 
 export type RunResult = {
   status: RunStatus;

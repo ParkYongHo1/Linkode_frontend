@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Square } from "lucide-react";
 
 import { ConsoleOutput, useCodeRunner } from "@/features/run-code";
 import {
@@ -29,7 +29,7 @@ export function LabEditorSection({
 }: LabEditorSectionProps) {
   const [code, setCode] = useState(initialCode);
   const [isDiffOpen, setIsDiffOpen] = useState(false);
-  const { lines, result, run } = useCodeRunner();
+  const { lines, result, run, cancel } = useCodeRunner();
 
   const { status, version, overwrite, conflictCode } = useAutoSave({
     problemId,
@@ -47,15 +47,22 @@ export function LabEditorSection({
         </span>
         <div className="flex min-w-0 flex-1 items-center justify-between gap-3 pl-5 md:flex-none md:justify-end md:gap-4 md:pl-0">
           <SaveStatusText status={status} version={version} />
-          <Button
-            type="button"
-            className="gap-2"
-            disabled={result.status === "running"}
-            onClick={() => run(code)}
-          >
-            <Play aria-hidden="true" className="size-3.5 fill-current" />
-            실행
-          </Button>
+          {result.status === "running" ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2"
+              onClick={cancel}
+            >
+              <Square aria-hidden="true" className="size-3 fill-current" />
+              중단
+            </Button>
+          ) : (
+            <Button type="button" className="gap-2" onClick={() => run(code)}>
+              <Play aria-hidden="true" className="size-3.5 fill-current" />
+              실행
+            </Button>
+          )}
         </div>
       </div>
 

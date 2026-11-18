@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Play, Square } from "lucide-react";
 
-import { ConsoleOutput, useCodeRunner } from "@/features/run-code";
+import type { ProblemTestCase } from "@/entities/problem";
+import {
+  ConsolePanel,
+  useCodeRunner,
+  type ConsoleTab,
+} from "@/features/run-code";
 import {
   ConflictBanner,
   SaveStatusText,
@@ -19,6 +24,7 @@ type LabEditorSectionProps = {
   initialCode: string;
   initialVersion: number;
   canSave: boolean;
+  testCases: ProblemTestCase[];
 };
 
 export function LabEditorSection({
@@ -26,10 +32,12 @@ export function LabEditorSection({
   initialCode,
   initialVersion,
   canSave,
+  testCases,
 }: LabEditorSectionProps) {
   const [code, setCode] = useState(initialCode);
   const [isDiffOpen, setIsDiffOpen] = useState(false);
-  const { lines, result, run, cancel } = useCodeRunner();
+  const [consoleTab, setConsoleTab] = useState<ConsoleTab>("tests");
+  const { lines, tests, result, run, cancel } = useCodeRunner();
 
   const { status, version, overwrite, conflictCode } = useAutoSave({
     problemId,
@@ -38,6 +46,11 @@ export function LabEditorSection({
     initialVersion,
     enabled: canSave,
   });
+
+  function handleRun() {
+    setConsoleTab("tests");
+    run(code, testCases);
+  }
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
@@ -58,7 +71,7 @@ export function LabEditorSection({
               중단
             </Button>
           ) : (
-            <Button type="button" className="gap-2" onClick={() => run(code)}>
+            <Button type="button" className="gap-2" onClick={handleRun}>
               <Play aria-hidden="true" className="size-3.5 fill-current" />
               실행
             </Button>
@@ -97,15 +110,14 @@ export function LabEditorSection({
         />
       </div>
 
-      <section
-        aria-label="콘솔"
-        className="flex h-40 shrink-0 flex-col border-t border-border md:h-[216px]"
-      >
-        <div className="flex h-11 shrink-0 items-center border-b border-border px-5 md:px-6">
-          <h2 className="text-sm font-semibold">콘솔</h2>
-        </div>
-        <ConsoleOutput lines={lines} result={result} />
-      </section>
+      <ConsolePanel
+        activeTab={consoleTab}
+        onTabChange={setConsoleTab}
+        lines={lines}
+        tests={tests}
+        totalTests={testCases.length}
+        result={result}
+      />
     </main>
   );
 }

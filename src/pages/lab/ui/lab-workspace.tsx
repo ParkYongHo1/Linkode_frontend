@@ -34,6 +34,7 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
           initialCode={initialCode}
           initialVersion={initialVersion}
           canSave={!!user}
+          testCases={problem.testCases}
         />
       }
       hint={

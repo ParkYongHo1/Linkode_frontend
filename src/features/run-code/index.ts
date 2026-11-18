@@ -1,3 +1,8 @@
-export type { ConsoleLine, RunResult, RunStatus } from "./model/types";
+export type {
+  ConsoleLine,
+  RunResult,
+  RunStatus,
+  TestResult,
+} from "./model/types";
 export { useCodeRunner } from "./model/use-code-runner";
-export { ConsoleOutput } from "./ui/console-output";
+export { ConsolePanel, type ConsoleTab } from "./ui/console-panel";

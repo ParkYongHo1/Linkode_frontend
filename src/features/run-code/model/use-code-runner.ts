@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { ConsoleLine, RunMessage, RunResult } from "./types";
+import type { ProblemTestCase } from "@/entities/problem";
+
+import type {
+  ConsoleLine,
+  RunMessage,
+  RunRequest,
+  RunResult,
+  TestResult,
+} from "./types";
 
 const TIMEOUT_MS = 5000;
 
@@ -12,6 +20,7 @@ const INITIAL_RESULT: RunResult = {
 
 export function useCodeRunner() {
   const [lines, setLines] = useState<ConsoleLine[]>([]);
+  const [tests, setTests] = useState<TestResult[]>([]);
   const [result, setResult] = useState<RunResult>(INITIAL_RESULT);
   const workerRef = useRef<Worker | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -24,7 +33,7 @@ export function useCodeRunner() {
     timerRef.current = null;
   }
 
-  function run(code: string) {
+  function run(code: string, testCases: ProblemTestCase[]) {
     stop();
 
     const worker = new Worker(
@@ -38,6 +47,8 @@ export function useCodeRunner() {
     const runId = runIdRef.current;
 
     setLines([]);
+
+    setTests([]);
 
     setResult({ ...INITIAL_RESULT, status: "running" });
 
@@ -63,6 +74,11 @@ export function useCodeRunner() {
         return;
       }
 
+      if (message.type === "test") {
+        setTests((prev) => [...prev, message.result]);
+        return;
+      }
+
       if (message.type === "done") {
         setResult({
           ...INITIAL_RESULT,
@@ -82,7 +98,8 @@ export function useCodeRunner() {
       stop();
     };
 
-    worker.postMessage({ runId, code });
+    const request: RunRequest = { runId, code, testCases };
+    worker.postMessage(request);
   }
 
   function cancel() {
@@ -94,5 +111,5 @@ export function useCodeRunner() {
     return () => stop();
   }, []);
 
-  return { lines, result, run, cancel };
+  return { lines, tests, result, run, cancel };
 }

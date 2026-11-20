@@ -150,6 +150,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      mark_problem_passed: {
+        Args: { p_problem_id: string }
+        Returns: undefined
+      }
       save_user_code: {
         Args: {
           p_code: string

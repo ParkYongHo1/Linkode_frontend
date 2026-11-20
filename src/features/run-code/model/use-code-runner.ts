@@ -18,7 +18,11 @@ const INITIAL_RESULT: RunResult = {
   errorMessage: null,
 };
 
-export function useCodeRunner() {
+type UseCodeRunnerOptions = {
+  onDone: (tests: TestResult[]) => void;
+};
+
+export function useCodeRunner({ onDone }: UseCodeRunnerOptions) {
   const [lines, setLines] = useState<ConsoleLine[]>([]);
   const [tests, setTests] = useState<TestResult[]>([]);
   const [result, setResult] = useState<RunResult>(INITIAL_RESULT);
@@ -35,6 +39,8 @@ export function useCodeRunner() {
 
   function run(code: string, testCases: ProblemTestCase[]) {
     stop();
+
+    const testsResult: TestResult[] = [];
 
     const worker = new Worker(
       new URL("../lib/runner.worker.ts", import.meta.url),
@@ -75,6 +81,7 @@ export function useCodeRunner() {
       }
 
       if (message.type === "test") {
+        testsResult.push(message.result);
         setTests((prev) => [...prev, message.result]);
         return;
       }
@@ -85,6 +92,7 @@ export function useCodeRunner() {
           status: "done",
           durationMs: message.durationMs,
         });
+        onDone(testsResult);
       }
 
       if (message.type === "error") {

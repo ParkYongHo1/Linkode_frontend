@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { Play, Square } from "lucide-react";
 
+import { markPassed } from "@/features/record-pass";
+
 import type { ProblemTestCase } from "@/entities/problem";
 import {
   ConsolePanel,
   useCodeRunner,
+  type TestResult,
   type ConsoleTab,
 } from "@/features/run-code";
+
 import {
   ConflictBanner,
   SaveStatusText,
@@ -37,7 +41,17 @@ export function LabEditorSection({
   const [code, setCode] = useState(initialCode);
   const [isDiffOpen, setIsDiffOpen] = useState(false);
   const [consoleTab, setConsoleTab] = useState<ConsoleTab>("tests");
-  const { lines, tests, result, run, cancel } = useCodeRunner();
+
+  function handleDone(results: TestResult[]) {
+    if (!canSave) return;
+    if (results.length !== testCases.length) return;
+    if (!results.every((test) => test.status === "passed")) return;
+
+    markPassed(problemId).catch((error) => console.error(error));
+  }
+  const { lines, tests, result, run, cancel } = useCodeRunner({
+    onDone: handleDone,
+  });
 
   const { status, version, overwrite, conflictCode } = useAutoSave({
     problemId,

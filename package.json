@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
+    "compare:hint-models": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/compare-hint-models.mts",
     "db:push": "supabase db push --remote",
     "db:types": "supabase gen types typescript --linked > src/shared/api/supabase/database-types.ts"
   },

@@ -39,6 +39,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      hint_requests: {
+        Row: {
+          charged: boolean
+          code_version: number
+          content: string | null
+          created_at: string
+          finished_at: string | null
+          id: string
+          problem_id: string
+          stage: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          charged?: boolean
+          code_version: number
+          content?: string | null
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          problem_id: string
+          stage: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          charged?: boolean
+          code_version?: number
+          content?: string | null
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          problem_id?: string
+          stage?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hint_requests_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       problems: {
         Row: {
           code: string
@@ -150,6 +197,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      finish_hint_request: {
+        Args: { p_content: string; p_request_id: string; p_status: string }
+        Returns: undefined
+      }
+      mark_hint_streaming: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       mark_problem_passed: {
         Args: { p_problem_id: string }
         Returns: undefined
@@ -161,6 +216,19 @@ export type Database = {
           p_problem_id: string
         }
         Returns: number
+      }
+      start_hint_request: {
+        Args: {
+          p_code_version: number
+          p_daily_limit: number
+          p_problem_id: string
+          p_stage: number
+          p_user_id: string
+        }
+        Returns: {
+          reason: string
+          request_id: string
+        }[]
       }
     }
     Enums: {

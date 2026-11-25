@@ -10,14 +10,19 @@ type HintPanelDemoProps = {
   problemId: string;
   isLoggedIn: boolean;
   initialHints: HintsByStage;
+  initialRemaining: number;
 };
 
 export function HintPanelDemo({
   problemId,
   isLoggedIn,
   initialHints,
+  initialRemaining,
 }: HintPanelDemoProps) {
-  const { hints, rejection, request, abort } = useHintRequest(initialHints);
+  const { hints, remaining, rejection, request, abort } = useHintRequest({
+    initialHints,
+    initialRemaining,
+  });
 
   return (
     <HintPanel
@@ -25,7 +30,7 @@ export function HintPanelDemo({
       rejection={rejection}
       currentVersion={0}
       isLoggedIn={isLoggedIn}
-      remaining={10}
+      remaining={remaining}
       onRequest={(stage) =>
         request(stage, {
           problemId,

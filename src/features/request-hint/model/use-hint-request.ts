@@ -8,8 +8,17 @@ import type { HintErrorCode, HintRequestBody, HintStage } from "./types";
 
 export type HintRequestInput = Omit<HintRequestBody, "stage">;
 
-export function useHintRequest(initialHints: HintsByStage = {}) {
+type UseHintRequestOptions = {
+  initialHints: HintsByStage;
+  initialRemaining: number;
+};
+
+export function useHintRequest({
+  initialHints,
+  initialRemaining,
+}: UseHintRequestOptions) {
   const [hints, setHints] = useState<HintsByStage>(initialHints);
+  const [remaining, setRemaining] = useState(initialRemaining);
   const [rejection, setRejection] = useState<HintErrorCode | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
   const streamingStageRef = useRef<HintStage | null>(null);
@@ -51,12 +60,18 @@ export function useHintRequest(initialHints: HintsByStage = {}) {
     controllerRef.current = controller;
     streamingStageRef.current = stage;
 
+    let charged = false;
+
     try {
       for await (const event of fetchHintStream(
         { ...input, stage },
         controller.signal,
       )) {
         if (event.type === "delta") {
+          if (!charged) {
+            charged = true;
+            setRemaining((prev) => Math.max(0, prev - 1));
+          }
           updateStage(stage, (hint) => ({
             ...hint,
             text: hint.text + event.text,
@@ -76,6 +91,7 @@ export function useHintRequest(initialHints: HintsByStage = {}) {
       if (error instanceof HintRequestError) {
         restoreStage(stage, previous);
         setRejection(error.code);
+        if (error.code === "quota_exceeded") setRemaining(0);
         return;
       }
       updateStage(stage, (hint) => ({ ...hint, status: "failed" }));
@@ -101,5 +117,5 @@ export function useHintRequest(initialHints: HintsByStage = {}) {
     return () => controllerRef.current?.abort();
   }, []);
 
-  return { hints, rejection, request, abort };
+  return { hints, remaining, rejection, request, abort };
 }

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getProblem } from "@/entities/problem";
 import { getMyCode } from "@/entities/user-code";
 import { getCurrentUser } from "@/entities/session";
-import { getMyHints } from "@/features/request-hint/server";
+import { getMyHintRemaining, getMyHints } from "@/features/request-hint/server";
 
 import { HintPanelDemo } from "./hint-panel-demo";
 import { LabEditorSection } from "./lab-editor-section";
@@ -19,10 +19,11 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
   if (!problem) {
     notFound();
   }
-  const [savedCode, user, hints] = await Promise.all([
+  const [savedCode, user, hints, remaining] = await Promise.all([
     getMyCode(problem.id),
     getCurrentUser(),
     getMyHints(problem.id),
+    getMyHintRemaining(),
   ]);
 
   const initialCode = savedCode?.code ?? problem.starterCode;
@@ -45,6 +46,7 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
           problemId={problem.id}
           isLoggedIn={!!user}
           initialHints={hints}
+          initialRemaining={remaining}
         />
       }
     />

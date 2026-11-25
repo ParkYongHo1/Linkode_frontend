@@ -29,6 +29,7 @@ export type HintErrorCode =
   | "invalid_request"
   | "problem_not_found"
   | "in_progress"
+  | "already_opened"
   | "stage_locked"
   | "quota_exceeded";
 

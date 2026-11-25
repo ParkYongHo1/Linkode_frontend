@@ -1,5 +1,6 @@
 export const HINT_REJECT_REASONS = [
   "in_progress",
+  "already_opened",
   "stage_locked",
   "quota_exceeded",
 ] as const;

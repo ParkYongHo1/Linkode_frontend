@@ -24,6 +24,7 @@ const ERROR_STATUS: Record<HintErrorCode, number> = {
   invalid_request: 400,
   problem_not_found: 404,
   in_progress: 409,
+  already_opened: 409,
   stage_locked: 409,
   quota_exceeded: 429,
 };

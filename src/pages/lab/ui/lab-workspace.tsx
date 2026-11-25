@@ -4,6 +4,7 @@ import { getProblem } from "@/entities/problem";
 import { getMyCode } from "@/entities/user-code";
 import { getCurrentUser } from "@/entities/session";
 
+import { HintPanelDemo } from "./hint-panel-demo";
 import { LabEditorSection } from "./lab-editor-section";
 import { LabTabs } from "./lab-tabs";
 import { ProblemPanel } from "./problem-panel";
@@ -37,24 +38,7 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
           testCases={problem.testCases}
         />
       }
-      hint={
-        <aside
-          aria-label="AI 힌트"
-          className="flex w-[400px] shrink-0 flex-col border-l border-border"
-        >
-          <div className="flex h-14 shrink-0 items-center border-b border-border px-6">
-            <h2 className="text-[15px] font-semibold">AI 힌트</h2>
-          </div>
-          <div className="flex flex-col gap-2 px-6 pt-8">
-            <span className="text-[17px] leading-[26px] font-bold">
-              막혔다면 힌트를 열어보세요
-            </span>
-            <p className="text-sm leading-[22px] text-muted-foreground">
-              정답을 바로 알려주지 않아요. 방향부터 하나씩 알려줘요.
-            </p>
-          </div>
-        </aside>
-      }
+      hint={<HintPanelDemo />}
     />
   );
 }

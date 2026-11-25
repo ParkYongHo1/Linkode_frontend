@@ -18,3 +18,6 @@ export {
 export { buildHintMessages } from "./lib/build-hint-messages";
 export { parseHintRequest } from "./lib/parse-hint-request";
 export { encodeSse } from "./lib/encode-sse";
+export type { HintStatus, HintsByStage, StageHint } from "./model/hint-state";
+export { HINT_STAGES, HINT_STAGE_LABEL } from "./config/hint-stages";
+export { HintPanel } from "./ui/hint-panel";

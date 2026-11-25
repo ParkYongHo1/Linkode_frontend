@@ -17,3 +17,4 @@ export {
 } from "./model/hint-reject-reason";
 export { buildHintMessages } from "./lib/build-hint-messages";
 export { parseHintRequest } from "./lib/parse-hint-request";
+export { encodeSse } from "./lib/encode-sse";

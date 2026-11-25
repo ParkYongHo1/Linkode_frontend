@@ -9,10 +9,21 @@ import { Markdown } from "@/shared/ui/markdown";
 
 import { HINT_STAGE_LABEL, HINT_STAGES } from "../config/hint-stages";
 import type { HintsByStage, StageHint } from "../model/hint-state";
-import type { HintStage } from "../model/types";
+import type { HintErrorCode, HintStage } from "../model/types";
+
+const REJECTION_MESSAGE: Record<HintErrorCode, string> = {
+  quota_exceeded: "오늘 힌트를 모두 썼어요 · 내일 다시 열려요",
+  already_opened: "이미 연 단계예요. 새로고침하면 받은 힌트를 볼 수 있어요",
+  stage_locked: "이전 단계 힌트를 먼저 열어주세요",
+  in_progress: "다른 화면에서 힌트를 받고 있어요. 잠시 후 다시 시도해주세요",
+  unauthorized: "로그인이 필요해요",
+  invalid_request: "힌트를 요청할 수 없어요. 새로고침 후 다시 시도해주세요",
+  problem_not_found: "힌트를 요청할 수 없어요. 새로고침 후 다시 시도해주세요",
+};
 
 type HintPanelProps = {
   hints: HintsByStage;
+  rejection: HintErrorCode | null;
   currentVersion: number;
   isLoggedIn: boolean;
   remaining: number;
@@ -33,6 +44,7 @@ function findLatestStage(hints: HintsByStage): HintStage {
 
 export function HintPanel({
   hints,
+  rejection,
   currentVersion,
   isLoggedIn,
   remaining,
@@ -133,6 +145,14 @@ export function HintPanel({
       </div>
 
       <div className="flex shrink-0 flex-col gap-2.5 border-t border-border px-6 pt-4 pb-5">
+        {rejection && !isStreaming && (
+          <p
+            role="alert"
+            className="text-center text-[13px] text-muted-foreground"
+          >
+            {REJECTION_MESSAGE[rejection]}
+          </p>
+        )}
         {!isLoggedIn ? (
           <div className="flex items-center justify-between gap-3">
             <span className="text-sm text-muted-foreground">

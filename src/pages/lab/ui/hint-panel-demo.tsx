@@ -1,17 +1,40 @@
 "use client";
 
-import { HintPanel, useHintRequest } from "@/features/request-hint";
+import {
+  HintPanel,
+  useHintRequest,
+  type HintsByStage,
+} from "@/features/request-hint";
 
-export function HintPanelDemo() {
-  const { hints, request, abort } = useHintRequest();
+type HintPanelDemoProps = {
+  problemId: string;
+  isLoggedIn: boolean;
+  initialHints: HintsByStage;
+};
+
+export function HintPanelDemo({
+  problemId,
+  isLoggedIn,
+  initialHints,
+}: HintPanelDemoProps) {
+  const { hints, rejection, request, abort } = useHintRequest(initialHints);
 
   return (
     <HintPanel
       hints={hints}
+      rejection={rejection}
       currentVersion={0}
-      isLoggedIn
+      isLoggedIn={isLoggedIn}
       remaining={10}
-      onRequest={(stage) => request(stage, 0)}
+      onRequest={(stage) =>
+        request(stage, {
+          problemId,
+          code: "function solution(nums, target) {\n  for (let i = 0; i < nums.length; i++) {\n    for (let j = 0; j < nums.length; j++) {\n      if (nums[i] + nums[j] === target) return [i, j];\n    }\n  }\n}",
+          lastError:
+            "테스트 3 실패 · 입력 [3,3], 6 · 기대값 [0,1] · 실제값 [0,0]",
+          codeVersion: 0,
+        })
+      }
       onAbort={abort}
     />
   );

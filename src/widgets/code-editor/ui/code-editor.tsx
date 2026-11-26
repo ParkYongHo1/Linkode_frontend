@@ -2,6 +2,8 @@
 
 import Editor, { type OnChange } from "@monaco-editor/react";
 
+import { useIsVisible } from "@/shared/lib/use-is-visible";
+
 import {
   defineEditorTheme,
   EDITOR_FONT_FAMILY,
@@ -14,6 +16,10 @@ type CodeEditorProps = {
 };
 
 export function CodeEditor({ defaultValue, onChange }: CodeEditorProps) {
+  const isVisible = useIsVisible();
+
+  if (!isVisible) return null;
+
   return (
     <Editor
       language="javascript"

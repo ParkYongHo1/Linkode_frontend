@@ -2,6 +2,8 @@
 
 import { DiffEditor } from "@monaco-editor/react";
 
+import { useIsVisible } from "@/shared/lib/use-is-visible";
+
 import {
   defineEditorTheme,
   EDITOR_FONT_FAMILY,
@@ -21,6 +23,8 @@ export function CodeDiffViewer({
   originalLabel,
   modifiedLabel,
 }: CodeDiffViewerProps) {
+  const isVisible = useIsVisible();
+
   return (
     <div className="flex h-full flex-col">
       <div className="grid h-9 shrink-0 grid-cols-2 border-b border-border text-[13px]">
@@ -38,7 +42,7 @@ export function CodeDiffViewer({
       </div>
 
       <div className="min-h-0 flex-1">
-        {original === undefined ? (
+        {!isVisible ? null : original === undefined ? (
           <p className="px-5 py-4 text-[13px] text-muted-foreground">
             다른 탭에서 저장한 코드를 불러오고 있어요
           </p>

@@ -29,6 +29,8 @@ import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { CodeDiffViewer, CodeEditor } from "@/widgets/code-editor";
 
+import { PassBanner } from "./pass-banner";
+
 type LabEditorSectionProps = {
   problemId: string;
   initialCode: string;
@@ -37,6 +39,7 @@ type LabEditorSectionProps = {
   testCases: ProblemTestCase[];
   initialHints: HintsByStage;
   initialRemaining: number;
+  nextProblem: { id: string; title: string } | null;
 };
 
 export function LabEditorSection({
@@ -47,6 +50,7 @@ export function LabEditorSection({
   testCases,
   initialHints,
   initialRemaining,
+  nextProblem,
 }: LabEditorSectionProps) {
   const [code, setCode] = useState(initialCode);
   const [isDiffOpen, setIsDiffOpen] = useState(false);
@@ -83,6 +87,11 @@ export function LabEditorSection({
       codeVersion: version,
     });
   }
+
+  const isAllPassed =
+    result.status === "done" &&
+    tests.length === testCases.length &&
+    tests.every((test) => test.status === "passed");
 
   function handleRun() {
     setConsoleTab("tests");
@@ -147,6 +156,10 @@ export function LabEditorSection({
             onChange={(value) => setCode(value ?? "")}
           />
         </div>
+
+        {isAllPassed && (
+          <PassBanner isLoggedIn={canSave} nextProblem={nextProblem} />
+        )}
 
         <ConsolePanel
           activeTab={consoleTab}

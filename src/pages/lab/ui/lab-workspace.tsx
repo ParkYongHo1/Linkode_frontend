@@ -5,7 +5,6 @@ import { getMyCode } from "@/entities/user-code";
 import { getCurrentUser } from "@/entities/session";
 import { getMyHintRemaining, getMyHints } from "@/features/request-hint/server";
 
-import { HintPanelDemo } from "./hint-panel-demo";
 import { LabEditorSection } from "./lab-editor-section";
 import { LabTabs } from "./lab-tabs";
 import { ProblemPanel } from "./problem-panel";
@@ -39,12 +38,6 @@ export async function LabWorkspace({ params }: LabWorkspaceProps) {
           initialVersion={initialVersion}
           canSave={!!user}
           testCases={problem.testCases}
-        />
-      }
-      hint={
-        <HintPanelDemo
-          problemId={problem.id}
-          isLoggedIn={!!user}
           initialHints={hints}
           initialRemaining={remaining}
         />

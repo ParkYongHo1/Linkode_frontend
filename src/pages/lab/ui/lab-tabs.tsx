@@ -14,10 +14,9 @@ const TABS: { value: LabTab; label: string }[] = [
 type LabTabsProps = {
   problem: ReactNode;
   editor: ReactNode;
-  hint: ReactNode;
 };
 
-export function LabTabs({ problem, editor, hint }: LabTabsProps) {
+export function LabTabs({ problem, editor }: LabTabsProps) {
   const [activeTab, setActiveTab] = useState<LabTab>("code");
 
   return (
@@ -75,8 +74,6 @@ export function LabTabs({ problem, editor, hint }: LabTabsProps) {
       >
         {editor}
       </div>
-
-      <div className="hidden md:flex">{hint}</div>
     </div>
   );
 }

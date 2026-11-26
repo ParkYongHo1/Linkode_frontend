@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 
+import { ProblemTableSkeleton } from "@/widgets/problem-table";
+
 import { COURSE_TITLE } from "../config/course";
 
 import { ProblemSummarySection } from "./problem-summary-section";
@@ -18,7 +20,7 @@ export function ProblemListPage({ searchParams }: PageProps<"/problems">) {
         <ProblemSummarySection />
       </Suspense>
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<ProblemTableSkeleton />}>
         <ProblemTableSection searchParams={searchParams} />
       </Suspense>
     </main>

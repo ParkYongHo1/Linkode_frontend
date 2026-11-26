@@ -143,7 +143,7 @@ export function LabEditorSection({
           )}
         >
           <CodeEditor
-            defaultValue={initialCode}
+            defaultValue={code}
             onChange={(value) => setCode(value ?? "")}
           />
         </div>

@@ -52,8 +52,8 @@ export function LabEditorSection({
   initialRemaining,
   nextProblem,
 }: LabEditorSectionProps) {
-  const [code, setCode] = useState(initialCode);
   const [isDiffOpen, setIsDiffOpen] = useState(false);
+  const [diffCode, setDiffCode] = useState("");
   const [consoleTab, setConsoleTab] = useState<ConsoleTab>("tests");
 
   function handleDone(results: TestResult[]) {
@@ -67,9 +67,15 @@ export function LabEditorSection({
     onDone: handleDone,
   });
 
-  const { status, version, overwrite, conflictCode } = useAutoSave({
+  const {
+    status,
+    version,
+    overwrite,
+    conflictCode,
+    handleCodeChange,
+    getLatestCode,
+  } = useAutoSave({
     problemId,
-    code,
     initialCode,
     initialVersion,
     enabled: canSave,
@@ -82,7 +88,7 @@ export function LabEditorSection({
 
     hint.request(stage, {
       problemId,
-      code,
+      code: getLatestCode(),
       lastError: lastError ? lastError.slice(0, MAX_HINT_ERROR_LENGTH) : null,
       codeVersion: version,
     });
@@ -95,7 +101,12 @@ export function LabEditorSection({
 
   function handleRun() {
     setConsoleTab("tests");
-    run(code, testCases);
+    run(getLatestCode(), testCases);
+  }
+
+  function handleToggleDiff() {
+    if (!isDiffOpen) setDiffCode(getLatestCode());
+    setIsDiffOpen((prev) => !prev);
   }
 
   return (
@@ -129,7 +140,7 @@ export function LabEditorSection({
         {status === "conflict" && (
           <ConflictBanner
             isDiffOpen={isDiffOpen}
-            onToggleDiff={() => setIsDiffOpen((prev) => !prev)}
+            onToggleDiff={handleToggleDiff}
             onOverwrite={overwrite}
           />
         )}
@@ -138,7 +149,7 @@ export function LabEditorSection({
           <div className="min-h-0 flex-1">
             <CodeDiffViewer
               original={conflictCode}
-              modified={code}
+              modified={diffCode}
               originalLabel="다른 탭 저장본"
               modifiedLabel="이 탭 (저장 안 됨)"
             />
@@ -152,8 +163,8 @@ export function LabEditorSection({
           )}
         >
           <CodeEditor
-            defaultValue={code}
-            onChange={(value) => setCode(value ?? "")}
+            defaultValue={initialCode}
+            onChange={(value) => handleCodeChange(value ?? "")}
           />
         </div>
 

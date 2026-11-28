@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 
-import { saveCode } from "../api/save-code";
 import { getSavedCode } from "../api/get-saved-code";
+import { saveCode } from "../api/save-code";
 
 import type { SaveStatus } from "./save-status";
 
@@ -11,7 +11,6 @@ const RETRY_MS = 5000;
 
 type UseAutoSaveParams = {
   problemId: string;
-  code: string;
   initialCode: string;
   initialVersion: number;
   enabled: boolean;
@@ -42,20 +41,40 @@ function getSaveStatus({
 
 export function useAutoSave({
   problemId,
-  code,
   initialCode,
   initialVersion,
   enabled,
 }: UseAutoSaveParams) {
-  const [baseVersion, setBaseVersion] = useState(initialVersion);
+  const [version, setVersion] = useState(initialVersion);
+  const codeRef = useRef(initialCode);
   const lastSavedCodeRef = useRef(initialCode);
+  const versionRef = useRef(initialVersion);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isSavingRef = useRef(false);
+  const isConflictRef = useRef(false);
 
   const { mutate, isPending, isError, data } = useMutation({
     mutationFn: saveCode,
+    onMutate: () => {
+      isSavingRef.current = true;
+    },
     onSuccess: (result, variables) => {
-      if (result.status === "saved") {
-        setBaseVersion(result.version);
-        lastSavedCodeRef.current = variables.code;
+      if (result.status === "conflict") {
+        isConflictRef.current = true;
+        return;
+      }
+      versionRef.current = result.version;
+      setVersion(result.version);
+      lastSavedCodeRef.current = variables.code;
+    },
+    onSettled: (_result, error) => {
+      isSavingRef.current = false;
+      if (error) {
+        schedule(RETRY_MS);
+        return;
+      }
+      if (codeRef.current !== lastSavedCodeRef.current) {
+        schedule(DEBOUNCE_MS);
       }
     },
   });
@@ -68,48 +87,59 @@ export function useAutoSave({
     staleTime: 0,
   });
 
-  useEffect(() => {
+  function save() {
     if (!enabled) return;
-    if (isPending) return;
-    if (isConflict) return;
+    if (isSavingRef.current || isConflictRef.current) return;
+
+    const code = codeRef.current;
     if (code === lastSavedCodeRef.current) return;
 
-    const delay = isError ? RETRY_MS : DEBOUNCE_MS;
+    mutate({ problemId, code, baseVersion: versionRef.current });
+  }
 
-    const timerId = setTimeout(() => {
-      mutate({ problemId, code, baseVersion });
-    }, delay);
+  function schedule(delay: number) {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(save, delay);
+  }
 
-    return () => clearTimeout(timerId);
-  }, [
-    problemId,
-    code,
-    baseVersion,
-    enabled,
-    mutate,
-    isConflict,
-    isError,
-    isPending,
-  ]);
+  function handleCodeChange(value: string) {
+    codeRef.current = value;
+    schedule(DEBOUNCE_MS);
+  }
+
+  function getLatestCode() {
+    return codeRef.current;
+  }
+
+  function overwrite() {
+    const latestVersion = conflictSaved?.version ?? 0;
+
+    versionRef.current = latestVersion;
+    setVersion(latestVersion);
+    isConflictRef.current = false;
+    mutate({ problemId, code: codeRef.current, baseVersion: latestVersion });
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const status = getSaveStatus({
     enabled,
     isPending,
     isError,
     isConflict,
-    version: baseVersion,
+    version,
   });
-  const overwrite = () => {
-    const latestVersion = conflictSaved?.version ?? 0;
-
-    setBaseVersion(latestVersion);
-    mutate({ problemId, code, baseVersion: latestVersion });
-  };
 
   return {
     status,
-    version: baseVersion,
+    version,
     overwrite,
     conflictCode: conflictSaved?.code,
+    handleCodeChange,
+    getLatestCode,
   };
 }
